@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/database");
-const { Expense } = require("./Expense");
+const { Movie } = require("./Movie");
 
 const Character = sequelize.define(
   "characters",
@@ -23,26 +23,12 @@ const Character = sequelize.define(
       type: DataTypes.FLOAT,
     },
     history: {
-      type: DataType.STRING,
-    },
-    movie_id: {
-      type: DataType.INTEGER,
-    },
+      type: DataTypes.STRING,
+    }
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 );
-
-Character.hasMany(Movie, {
-  foreignKey: "movie_id",
-  sourceKey: "id",
-  onDelete: "CASCADE",
-});
-Movie.hasMany(Character, {
-  foreignKey: "character_id",
-  sourceKey: "id",
-  onDelete: "CASCADE",
-});
 
 module.exports = { Character };
