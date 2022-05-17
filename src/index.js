@@ -2,13 +2,13 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const { sequelize } = require("./database/database");
-const index = require('./routes/index');
 const cors = require("cors");
 const { Character } = require("./models/Character");
 const { Movie } = require("./models/Movie");
 const { Genre } = require("./models/Genre");
 const { GenreMovie } = require("./models/GenreMovie");
-const { } = require("./models/CharacterMovie");
+const { CharacterMovie } = require("./models/CharacterMovie");
+const characterRoutes = require('../src/routes/characters.routes');
 
 //settings
 app.set('port', process.env.PORT || 3000);
@@ -20,8 +20,9 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({extended: false}));
 
+
 //routes
-app.use(index);
+app.use(characterRoutes);
 
 async function main(){
   try {
