@@ -1,24 +1,31 @@
+const { Op } = require('sequelize');
 const { Character } = require('../models/Character');
 
 const getCharacters = async (req,res) =>{
 try {
-    const name = req.query.name;
-    let result;
-    if(name !== ''){
-      result = await Character.findAll({
-        where: {
-          name,
-        },
-      });
-    }else{
-      result = await Character.findAll();
-    }
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        message: "Character not found",
-      });
-    }
-    res.json(result); 
+  let name = "";
+  let age = 0;
+  name = (req.query.name || null);
+  age = (req.query.age || 0);
+  console.log("Nombre:"+name);
+  console.log("Edad:"+age);
+ 
+  let result;
+  if (name !== null || age !== 0) {
+    result = await Character.findAll({
+      where: {
+        [Op.or]: [{ name }, { age }],
+      },
+    });
+  } else {
+    result = await Character.findAll();
+  }
+  if (result.rowCount === 0) {
+    return res.status(404).json({
+      message: "Character not found",
+    });
+  }
+  res.json(result);
 } catch (error) {
   console.log(error);
 }
