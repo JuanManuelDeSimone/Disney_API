@@ -3,7 +3,6 @@ const { Character } = require('../models/Character');
 const getCharacters = async (req,res) =>{
 try {
     const name = req.query.name;
-    console.log(name);
     let result;
     if(name !== ''){
       result = await Character.findAll({
@@ -12,7 +11,6 @@ try {
         },
       });
     }else{
-      console.log("entro por el else")
       result = await Character.findAll();
     }
     if (result.rowCount === 0) {
