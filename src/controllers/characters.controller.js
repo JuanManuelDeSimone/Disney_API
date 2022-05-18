@@ -42,6 +42,26 @@ const deleteCharacter = async (req,res) => {
    console.log(error) 
   }
 };
+const getCharacterbyName = async (req,res) => {
+  try {
+    const { name } = req.params;
+    console.log(name);
+    const result = await Character.findAll({
+      where: {
+        name
+      }
+    })
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Character not found",
+      });
+    }
+    res.json(result[0]);    
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const editCharacter = async (req,res) => {
   try {
     const {id} = req.params;
@@ -76,5 +96,6 @@ module.exports = {
   getAllCharacters,
   createCharacter,
   deleteCharacter,
-  editCharacter
+  editCharacter,
+  getCharacterbyName
 };
