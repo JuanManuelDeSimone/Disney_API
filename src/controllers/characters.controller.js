@@ -3,12 +3,9 @@ const { Character } = require('../models/Character');
 
 const getCharacters = async (req,res) =>{
 try {
-  let name = "";
-  let age = 0;
-  name = (req.query.name || null);
-  age = (req.query.age || 0);
-  console.log("Nombre:"+name);
-  console.log("Edad:"+age);
+
+  const name = (req.query.name || null);
+  const age = (req.query.age || 0);
  
   let result;
   if (name !== null || age !== 0) {
