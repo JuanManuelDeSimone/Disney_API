@@ -10,6 +10,7 @@ const { GenreMovie } = require("./models/GenreMovie");
 const { CharacterMovie } = require("./models/CharacterMovie");
 const characterRoutes = require('../src/routes/characters.routes');
 const movieRoutes = require('../src/routes/movies.routes');
+const genreRoutes = require('../src/routes/genres.routes');
 
 //settings
 app.set('port', process.env.PORT || 3000);
@@ -25,6 +26,7 @@ app.use(express.urlencoded({extended: false}));
 //routes
 app.use(characterRoutes);
 app.use(movieRoutes);
+app.use(genreRoutes);
 
 async function main(){
   try {
