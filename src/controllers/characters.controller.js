@@ -1,5 +1,7 @@
 const { Op } = require('sequelize');
 const { Character } = require('../models/Character');
+const { CharacterMovie } = require('../models/CharacterMovie');
+const { Movie } = require('../models/Movie');
 
 const getCharacters = async (req,res) =>{
 try {
@@ -28,7 +30,7 @@ try {
 }
 };
 const createCharacter = async (req,res) => {
-  const { image, name, age, weight,history} = req.body;
+  const { image, name, age, weight,history, title} = req.body;
   try {
     const newCharacter = await Character.create({
       image,
@@ -37,7 +39,28 @@ const createCharacter = async (req,res) => {
       weight,
       history
     })
-    res.json(newCharacter)
+    if(newCharacter.rowCount !== 0){
+      let result = null;
+      if (title !== null) {
+        result = await Movie.findAll({
+          where: {
+            title,
+          },
+        });
+        //console.log(result);         
+      }     
+      if (result.rowCount !== 0) {
+        console.log('newCharacter:'+newCharacter.id);
+        console.log('result:'+result[0].id);
+        const characterId = parseInt(newCharacter.id);
+        const movieId = parseInt(result[0].id);
+        await CharacterMovie.create({
+          characterId,
+          movieId,
+        });
+      }
+    };
+    await res.json(newCharacter)
   } catch (error) {
     console.log(error)
   }

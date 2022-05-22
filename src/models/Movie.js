@@ -15,11 +15,11 @@ const Movie = sequelize.define(
     title: {
       type: DataTypes.STRING,
     },
-    date: {
+    releasedate: {
       type: DataTypes.DATE,
     },
     rate: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
     },
   },
   {
