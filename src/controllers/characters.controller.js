@@ -3,28 +3,32 @@ const { Character } = require('../models/Character');
 const { CharacterMovie } = require('../models/CharacterMovie');
 const { Movie } = require('../models/Movie');
 
+
 const getCharacters = async (req,res) =>{
 try {
 
   const name = (req.query.name || null);
   const age = (req.query.age || 0);
+  let title = null;
  
   let result;
   if (name !== null || age !== 0) {
     result = await Character.findAll({
+      include: [{model:Movie}],
       where: {
         [Op.or]: [{ name }, { age }],
-      },
-    });
+      }
+    });   
+    await res.json(result);
   } else {
-    result = await Character.findAll();
+    result = await Character.findAll({include: Movie});
+    await res.json(result);
   }
   if (result.rowCount === 0) {
     return res.status(404).json({
       message: "Character not found",
     });
   }
-  res.json(result);
 } catch (error) {
   console.log(error);
 }
@@ -42,22 +46,19 @@ const createCharacter = async (req,res) => {
     if(newCharacter.rowCount !== 0){
       let result = null;
       if (title !== null) {
-        result = await Movie.findAll({
-          where: {
-            title,
-          },
-        });
-        //console.log(result);         
+        findMovies(title);    
       }     
       if (result.rowCount !== 0) {
-        console.log('newCharacter:'+newCharacter.id);
-        console.log('result:'+result[0].id);
         const characterId = parseInt(newCharacter.id);
         const movieId = parseInt(result[0].id);
-        await CharacterMovie.create({
-          characterId,
-          movieId,
-        });
+        try {
+          await CharacterMovie.create({
+            characterId,
+            movieId,
+          });          
+        } catch (error) {
+          console.log(error);
+        }
       }
     };
     await res.json(newCharacter)
