@@ -14,14 +14,26 @@ try {
   let result;
   if (name !== null || age !== 0) {
     result = await Character.findAll({
-      include: [{model:Movie}],
       where: {
         [Op.or]: [{ name }, { age }],
-      }
+      },
+      include: {
+        model: Movie,
+        through: {
+          attributes: [],
+        },
+      },
     });   
     await res.json(result);
   } else {
-    result = await Character.findAll({include: Movie});
+    result = await Character.findAll({
+      include: {
+        model: Movie,
+        through: {
+          attributes: [],
+        },
+      },
+    });
     await res.json(result);
   }
   if (result.rowCount === 0) {
@@ -46,11 +58,13 @@ const createCharacter = async (req,res) => {
     if(newCharacter.rowCount !== 0){
       let result = null;
       if (title !== null) {
-        findMovies(title);    
+        result = await Movie.findOne({
+          where: {title}
+        })
       }     
       if (result.rowCount !== 0) {
         const characterId = parseInt(newCharacter.id);
-        const movieId = parseInt(result[0].id);
+        const movieId = parseInt(result.id);
         try {
           await CharacterMovie.create({
             characterId,
@@ -68,12 +82,15 @@ const createCharacter = async (req,res) => {
 };
 const deleteCharacter = async (req,res) => {
   try {
-    const {id} = req.params;
-    const result = await Character.destroy({
-      where: {
-        id
-      }
-    });
+    const name = (req.query.name || null);
+    let result = null;
+    if(name !== null){
+      result = await Character.destroy({
+        where: {
+          name
+        },
+      });
+    }
     if(result.rowCount === 0){
       return res.status(404).json({
         message: "Character not found"
@@ -86,29 +103,31 @@ const deleteCharacter = async (req,res) => {
 };
 const editCharacter = async (req,res) => {
   try {
-    const {id} = req.params;
-    const { image, name, age, weight, history} = req.body;
-    const result = await Character.update(
-      {
-        image,
-        name,
-        age,
-        weight,
-        history
-      },
-      {
-        where: {
-          id,
+    const name = (req.query.name || null);
+    const { image, age, weight, history} = req.body;
+    let result = null;
+    if(name !== null){
+      result = await Character.update(
+        {
+          image,
+          name,
+          age,
+          weight,
+          history,
         },
-      }
-    );
+        {
+          where: {
+            name,
+          },
+        }
+      );
+    }
     if (result.rowCount === 0) {
       return res.status(404).json({
         message: "Character not found",
       });
     }
     res.sendStatus(204);
-    res.json(result);
   } catch (error) {
     console.log(error)
   }

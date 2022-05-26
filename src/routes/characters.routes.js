@@ -9,7 +9,7 @@ const {
 
 router.get('/api/characters', getCharacters);
 router.post('/api/character', createCharacter);
-router.delete('/api/character/:id', deleteCharacter);
-router.put('/api/character/:id', editCharacter);
+router.delete('/api/character', deleteCharacter);
+router.put('/api/character', editCharacter);
 
 module.exports = router;
