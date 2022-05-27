@@ -1,5 +1,7 @@
 const { Op } = require('express');
 const { Movie } = require('../models/Movie');
+const { Character } = require('../models/Character');
+const { CharacterMovie } = require('../models/CharacterMovie');
 
 const getMovies = async (req,res)=>{
   try {
@@ -9,7 +11,13 @@ const getMovies = async (req,res)=>{
       result = await Movie.findAll({
       where:{
         title
-      }     
+      },
+      include:{
+        model: Character,
+        through: {
+          attributes: [],
+        }
+      }  
     })
       if (result.rowCount === 0) {
         return res.status(404).json({
@@ -17,7 +25,14 @@ const getMovies = async (req,res)=>{
         });
       }     
     }else{
-      result = await Movie.findAll();
+      result = await Movie.findAll({
+        include: {
+          model: Character,
+          through: {
+            attributes: [],
+          },
+        },
+      });
     }
     await res.json(result);
   } catch (error) {
@@ -51,14 +66,37 @@ const editMovie = async (req,res) =>{
 };
 const createMovie = async (req,res) => {
   try {
-    const {title, image, rate, date} = req.body;
-    const result = await Movie.create({
+    const {title, image, rate, releasedate, character} = req.body;
+    const newMovie = await Movie.create({
       image,
       title,
       rate,
-      date
+      releasedate
     })
-    res.json(result);    
+    if(newMovie.rowCount !== 0){
+      let result = null;
+      const name = character;
+      if(name !== null){
+        result = await Character.findOne({
+          where: {name},
+        });
+      }
+      if (result !== null) {
+        console.log("result:" + result.id);
+        console.log("newMovie:" + newMovie.id);
+        const characterId = parseInt(result.id);
+        const movieId = parseInt(newMovie.id);
+        try {
+          CharacterMovie.create({
+            characterId,
+            movieId,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    await res.json(newMovie);    
   } catch (error) {
     console.log(error);
   }

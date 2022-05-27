@@ -62,7 +62,7 @@ const createCharacter = async (req,res) => {
           where: {title}
         })
       }     
-      if (result.rowCount !== 0) {
+      if (result !== null) {
         const characterId = parseInt(newCharacter.id);
         const movieId = parseInt(result.id);
         try {
