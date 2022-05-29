@@ -1,4 +1,6 @@
 const { Genre } = require('../models/Genre');
+const { Movie } = require('../models/Movie');
+const { Character } = require('../models/Character');
 
 const getGenre = async (req,res)=>{
 try {
@@ -6,10 +8,35 @@ try {
   const name = (req.query.name || null);
   if(name !== null){
     result = await Genre.findAll({
-      where: {name}
-    })
+      where: { name },
+      include: {
+        model: Movie,
+        through: {
+          attributes: [],
+        },
+        include:{
+          model: Character,
+          through:{
+            attributes: [],
+          }
+        },
+      },
+    });
   }else{
-    result = await Genre.findAll();
+    result = await Genre.findAll({
+      include: {
+        model: Movie,
+        through: {
+          attributes: [],
+        },
+        include: {
+          model: Character,
+          through: {
+            attributes: [],
+          },
+        },
+      },
+    });
   }
   await res.json(result);
 } catch (error) {

@@ -1,22 +1,26 @@
 const { Op } = require('express');
 const { Movie } = require('../models/Movie');
-const { Character } = require('../models/Character');
 const { CharacterMovie } = require('../models/CharacterMovie');
+const { Genre } = require('../models/Genre');
 
 const getMovies = async (req,res)=>{
   try {
     const title = (req.query.title || null);
+    const order = (req.query.order || null);
+    const genre = (req.query.genre || null);
     let result = null;
     if(title !== null){
       result = await Movie.findAll({
       where:{
-        title
+        title: title,
       },
+      order: [['id', order || 'ASC']],      
       include:{
-        model: Character,
+        model: Genre,
+        where: {id: genre},
         through: {
           attributes: [],
-        }
+        },
       }  
     })
       if (result.rowCount === 0) {
@@ -26,8 +30,10 @@ const getMovies = async (req,res)=>{
       }     
     }else{
       result = await Movie.findAll({
+        order: [["id", order || 'ASC']],        
         include: {
-          model: Character,
+          model: Genre,
+          where: {id: genre},
           through: {
             attributes: [],
           },

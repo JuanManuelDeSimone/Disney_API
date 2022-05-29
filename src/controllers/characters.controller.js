@@ -2,14 +2,14 @@ const { Op } = require('sequelize');
 const { Character } = require('../models/Character');
 const { CharacterMovie } = require('../models/CharacterMovie');
 const { Movie } = require('../models/Movie');
-
+const { Genre } = require('../models/Genre');
 
 const getCharacters = async (req,res) =>{
 try {
 
   const name = (req.query.name || null);
   const age = (req.query.age || 0);
-  let title = null;
+  const title = (req.query.title || null);
  
   let result;
   if (name !== null || age !== 0) {
@@ -22,6 +22,12 @@ try {
         through: {
           attributes: [],
         },
+        include:{
+          model: Genre,
+          through:{
+            attributes: [],
+          }
+        }
       },
     });   
     await res.json(result);
@@ -31,6 +37,12 @@ try {
         model: Movie,
         through: {
           attributes: [],
+        },
+        include: {
+          model: Genre,
+          through: {
+            attributes: [],
+          },
         },
       },
     });
