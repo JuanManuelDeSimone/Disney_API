@@ -44,6 +44,10 @@ const getMovies = async (req,res)=>{
         order: [["id", order || "ASC"]],
         include: {
           model: Genre,
+<<<<<<< HEAD
+=======
+          where: {name: genre},
+>>>>>>> ff24877b50fb07f86821baf97b0b81370030ee03
           through: {
             attributes: [],
           },
