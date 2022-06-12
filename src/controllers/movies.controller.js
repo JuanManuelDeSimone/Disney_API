@@ -2,6 +2,7 @@ const { Op } = require('express');
 const { Movie } = require('../models/Movie');
 const { CharacterMovie } = require('../models/CharacterMovie');
 const { Genre } = require('../models/Genre');
+const { Character } = require('../models/Character');
 
 const getMovies = async (req,res)=>{
   try {
@@ -9,35 +10,49 @@ const getMovies = async (req,res)=>{
     const order = (req.query.order || null);
     const genre = (req.query.genre || null);
     let result = null;
-    if(title !== null){
+    if(genre !== null){
+      console.log("entro genre");
       result = await Movie.findAll({
-      where:{
-        title: title,
-      },
-      order: [['id', order || 'ASC']],      
-      include:{
-        model: Genre,
-        where: {name: genre},
-        through: {
-          attributes: [],
-        },
-      }  
-    })
-      if (result.rowCount === 0) {
-        return res.status(404).json({
-          message: "Movie not found",
-        });
-      }     
-    }else{
-      result = await Movie.findAll({
-        order: [["id", order || 'ASC']],        
-        include: {
+        order: [['id', order || 'ASC']],      
+        include:{
           model: Genre,
           where: {name: genre},
           through: {
             attributes: [],
           },
+        }  
+      })
+    }
+    if(title !== null){
+      console.log("Entro title");
+      result = await Movie.findAll({
+        where:{
+          title: title,
         },
+        order: [['id', order || 'ASC']],
+        include:{
+          model:Genre,
+          through:{
+            attributes: []
+          }
+        }
+      })
+    }
+    if(title == null && genre == null){
+      console.log("entro a todos")
+      result = await Movie.findAll({
+        order: [["id", order || "ASC"]],
+        include: {
+          model: Genre,
+          through: {
+            attributes: [],
+          },
+        },
+      });
+    }
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Movie not found",
       });
     }
     await res.json(result);
@@ -48,13 +63,13 @@ const getMovies = async (req,res)=>{
 const editMovie = async (req,res) =>{
   try {
     const title = (req.query.title || null);
-    const {image, date, rate} = req.body;
+    const {image, releasedate, rate} = req.body;
     let result = null;
     if(title !== null){
       result = await Movie.update({
         title,
         image,
-        date,
+        releasedate,
         rate
       },{
         where: { title }
