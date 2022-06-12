@@ -4,50 +4,44 @@ const { CharacterMovie } = require('../models/CharacterMovie');
 const { Genre } = require('../models/Genre');
 const { Character } = require('../models/Character');
 
-const getMovies = async (req,res)=>{
+const getMovies = async (req, res) => {
   try {
-    const title = (req.query.title || null);
-    const order = (req.query.order || null);
-    const genre = (req.query.genre || null);
+    const title = req.query.title || null;
+    const order = req.query.order || null;
+    const genre = req.query.genre || null;
     let result = null;
-    if(genre !== null){
-      console.log("entro genre");
-      result = await Movie.findAll({
-        order: [['id', order || 'ASC']],      
-        include:{
-          model: Genre,
-          where: {name: genre},
-          through: {
-            attributes: [],
-          },
-        }  
-      })
-    }
-    if(title !== null){
-      console.log("Entro title");
-      result = await Movie.findAll({
-        where:{
-          title: title,
-        },
-        order: [['id', order || 'ASC']],
-        include:{
-          model:Genre,
-          through:{
-            attributes: []
-          }
-        }
-      })
-    }
-    if(title == null && genre == null){
-      console.log("entro a todos")
+    if (genre !== null) {      
       result = await Movie.findAll({
         order: [["id", order || "ASC"]],
         include: {
           model: Genre,
-<<<<<<< HEAD
-=======
-          where: {name: genre},
->>>>>>> ff24877b50fb07f86821baf97b0b81370030ee03
+          where: { name: genre },
+          through: {
+            attributes: [],
+          },
+        },
+      });
+    }
+    if (title !== null) {
+      result = await Movie.findAll({
+        where: {
+          title: title,
+        },
+        order: [["id", order || "ASC"]],
+        include: {
+          model: Genre,
+          through: {
+            attributes: [],
+          },
+        },
+      });
+    }
+    if (title == null && genre == null) {
+      result = await Movie.findAll({
+        order: [["id", order || "ASC"]],
+        include: {
+          model: Genre,
+          where: { name: genre },
           through: {
             attributes: [],
           },
@@ -61,7 +55,7 @@ const getMovies = async (req,res)=>{
     }
     await res.json(result);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 const editMovie = async (req,res) =>{
