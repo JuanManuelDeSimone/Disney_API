@@ -13,6 +13,7 @@ try {
  
   let result;
   if (name !== null || age !== 0) {
+    console.log("entro 1")
     result = await Character.findAll({
       where: {
         [Op.or]: [{ name }, { age }],
@@ -30,8 +31,14 @@ try {
         }
       },
     });   
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Character not found",
+      });
+    }    
     await res.json(result);
   } else {
+    console.log("entro 2");    
     result = await Character.findAll({
       include: {
         model: Movie,
@@ -46,13 +53,14 @@ try {
         },
       },
     });
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Character not found",
+      });
+    }     
     await res.json(result);
   }
-  if (result.rowCount === 0) {
-    return res.status(404).json({
-      message: "Character not found",
-    });
-  }
+
 } catch (error) {
   console.log(error);
 }
@@ -87,6 +95,11 @@ const createCharacter = async (req,res) => {
         }
       }
     };
+    if (newCharacter.rowCount === 0) {
+      return res.status(404).json({
+        message: "Character not created",
+      });
+    }        
     await res.json(newCharacter)
   } catch (error) {
     console.log(error)
@@ -144,6 +157,8 @@ const editCharacter = async (req,res) => {
     console.log(error)
   }
 }
+
+
 
 module.exports = {
   getCharacters,
